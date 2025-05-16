@@ -1,0 +1,71 @@
+How to Install Gitea on Ubuntu 25.04
+
+Gitea is a lightweight, open-source forge software for hosting Git repositories with collaborative features such as issue tracking, wikis, and code review.
+
+Prerequisites
+
+    -> Full SSH root access or a user with sudo privileges.
+
+    -> Supported databases (SQLite, PostgreSQL, MySQL, MariaDB).
+    -> This guide uses SQLite for simplicity.
+
+Step 1: Install SQLite
+
+      sudo apt update
+      sudo apt install sqlite3
+
+Verify installation:
+
+     sqlite3 --version
+
+Step 2: Install Git: 
+
+   sudo apt install git
+   git --version
+
+Step 3: Create Git User:
+
+  Create a dedicated system user to run Gitea: 
+
+           sudo adduser --system --shell /bin/bash --gecos 'Git Version Control' --group --disabled-password --home /home/git git
+
+
+Step 4: Download and Install Gitea Binary: 
+
+  Download the latest Gitea release (1.22 as example):
+
+            wget -O /tmp/gitea https://dl.gitea.com/gitea/1.22/gitea-1.22-linux-amd64
+            sudo mv /tmp/gitea /usr/local/bin/gitea
+            sudo chmod +x /usr/local/bin/gitea
+
+Step 5: Set Up Directories and Permissions:
+
+           sudo mkdir -p /var/lib/gitea/{custom,data,indexers,public,log}
+           sudo chown git: /var/lib/gitea/{data,indexers,log}
+           sudo chmod 750 /var/lib/gitea/{data,indexers,log}
+
+           sudo mkdir /etc/gitea
+           sudo chown root:git /etc/gitea
+           sudo chmod 770 /etc/gitea
+
+Step 6: Create Systemd Service for Gitea : 
+
+          sudo wget https://raw.githubusercontent.com/go-gitea/gitea/main/contrib/systemd/gitea.service -P /etc/systemd/system/
+          sudo systemctl daemon-reload
+          sudo systemctl start gitea
+          sudo systemctl enable gitea
+          sudo systemctl status gitea
+
+
+
+Step 7: Configure Firewall: 
+
+        sudo ufw allow 3000/tcp
+        sudo ufw reload
+
+Step 8: Initial Web Configuration: 
+
+           http://your-server-ip:3000
+
+
+========================================
